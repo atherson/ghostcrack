@@ -45,20 +45,6 @@ echo -e "[${Green}${wifiInterface}${White}] Enabled!"
 fi
 }
 
-banner () {        ##### Banner #####
-echo -e "${Red}
-█    ██   ▄▄▄▄▄▄ ▀▄    ▄ ██   ▄█ █▄▄▄▄ ▄█▄    █▄▄▄▄ ██   ▄█▄    █  █▀ 
-█    █ █ ▀   ▄▄▀   █  █  █ █  ██ █  ▄▀ █▀ ▀▄  █  ▄▀ █ █  █▀ ▀▄  █▄█   
-█    █▄▄█ ▄▀▀   ▄▀  ▀█   █▄▄█ ██ █▀▀▌  █   ▀  █▀▀▌  █▄▄█ █   ▀  █▀▄   
-███▄ █  █ ▀▀▀▀▀▀    █    █  █ ▐█ █  █  █▄  ▄▀ █  █  █  █ █▄  ▄▀ █  █  
-    ▀   █         ▄▀        █  ▐   █   ▀███▀    █      █ ▀███▀    █   
-       █                   █      ▀            ▀      █          ▀    
-      ▀                   ▀                          ▀                "
-echo -e "${Yellow} \n             A lazy script for aircrack-ng, wifi hacking.
-      The script only works if your wifi adapter has monitor mode."
-echo -e "${Green}\n                    Developed by: Sandesh (3xploitGuy)"
-echo -e "${Green}                         Version: 2.1 Stable"
-}
 
 menu () {        ##### Display available options #####
 echo -e "\n${Yellow}                      [ Select Option To Continue ]\n\n"
