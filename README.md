@@ -1,5 +1,3 @@
-
-
 # Ghostcrack 
 The main purpose of the tool is automating wifi attack. It is a automated bash script for aircrack-ng. Crack the four way handshake and get into the network.<br/>
 
@@ -21,8 +19,8 @@ It creates denial of service (DoS) condition against any wifi router by continou
 
 ## Installing and requirements
 - aircrack-ng
-- Linux or Unix-based system (Currently tested only on Kali Linux rolling)
-- Root access
+- Linux, Unix-based system, or Termux (Tested on Kali Linux rolling and Termux)
+- Root access or equivalent permissions
 
 ### Installing
 + **For Linux :**
@@ -34,6 +32,20 @@ It creates denial of service (DoS) condition against any wifi router by continou
     chmod +x ghostcrack.sh
 
     ./ghostcrack.sh
+```
++ **For Termux:**
+```
+    pkg update && pkg upgrade
+
+    pkg install git
+
+    git clone https://github.com/atherson/ghostcrack.git
+
+    cd ghostcrack
+
+    chmod +x termux.sh
+
+    ./termux.sh
 ```
 
 ## Basics
@@ -52,5 +64,3 @@ Ghostcrack is created to help in penetration testing and it's not responsible fo
 
 
 Pull requests are always welcomed.
-
-
