@@ -193,7 +193,6 @@ checkRoot
 checkDependencies
 getWiFiInterface
 checkWiFiStatus
-banner
 menu
 }
 
